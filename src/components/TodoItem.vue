@@ -4,7 +4,7 @@
 border-gray-400 last:border-b-0">
                         <div class="flex items-center justify-center 
 mr-2">
-                            <button class="text-gray-400">
+                            <button :class="{'text-gray-400': !Todo.completed, 'text-green-500': Todo.completed}" style="cursor: pointer;" @click="clickcheck()">
                                 <svg class="w-5 h-5" fill="none" 
 stroke="currentColor" viewBox="0 0 24 24" 
 xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" 
@@ -25,7 +25,7 @@ leading-normal mr-3"
 
                         <div class="ml-auto flex items-center 
 justify-center">
-                            <button class="focus:outline-none">
+                            <button class="focus:outline-none" @click="deletetodo()" style="cursor: pointer;">
                                 <svg
                                     class="ml-3 h-4 w-4 text-gray-500"
                                     viewBox="0 0 24 24"
@@ -49,16 +49,28 @@ justify-center">
                 </div>
 </template>
 
-<script>
-export default {
-    props: {
-        Todo: {
-            type: Object,
-            default: () => ({})
-        }
-    },
-    setup(props) {
-        console.log(props.Todo)
-    }
+<script setup>
+
+import { useStore } from 'vuex';
+import { toRefs } from 'vue';
+
+const props = defineProps({
+  Todo: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
+const { Todo } = toRefs(props)
+const store = useStore()
+
+async function clickcheck() {
+    this.Todo.completed = !this.Todo.completed
+
+    await store.dispatch('AtualizarJson', Todo.value)
+}
+
+async function deletetodo() {
+    await store.dispatch('DeletarTodo', Todo.value)
 }
 </script>
